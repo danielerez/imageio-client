@@ -5,8 +5,6 @@ import com.google.gson.JsonObject;
 import imageioclient.entities.Guid;
 import imageioclient.entities.ImageTicket;
 
-import java.util.UUID;
-
 public class Client {
     public static void main(String[] args) {
         try {
@@ -19,7 +17,7 @@ public class Client {
 
     private static void execute(String[] args) {
         ImageioClient imageioClient = new ImageioClient();
-        String ticketId = null;
+        String ticketId;
 
         switch (args[0]) {
             case "GET":
@@ -29,14 +27,14 @@ public class Client {
                 System.out.println(ticketStr);
                 break;
             case "PUT":
-                ImageTicket ticket = new ImageTicket();
                 JsonObject ticketJson = new Gson().fromJson(args[1], JsonObject.class);
-                ticket.getImageTicketInformation().setSize(ticketJson.get("size").getAsLong());
-                ticket.getImageTicketInformation().setUrl(ticketJson.get("url").getAsString());
-                ticket.getImageTicketInformation().setTimeout(ticketJson.get("timeout").getAsInt());
-                ticket.setId(Guid.createGuidFromString(ticketJson.get("uuid").getAsString()));
-                ticket.setOps(ticketJson.get("ops").getAsJsonArray().toString()
-                        .replace("},{", " ,").split(" "));
+                ImageTicket ticket = new ImageTicket(
+                        Guid.createGuidFromString(ticketJson.get("uuid").getAsString()),
+                        ticketJson.get("size").getAsLong(),
+                        ticketJson.get("url").getAsString(),
+                        ticketJson.get("timeout").getAsInt(),
+                        ticketJson.get("ops").getAsJsonArray().toString()
+                                .replace("},{", " ,").split(" "));
                 imageioClient.putTicket(ticket);
                 break;
             case "DELETE":

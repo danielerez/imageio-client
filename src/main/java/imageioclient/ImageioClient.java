@@ -1,28 +1,24 @@
 package imageioclient;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-
 import imageioclient.entities.Guid;
 import imageioclient.entities.ImageTicket;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.DefaultBHttpClientConnection;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.apache.http.util.EntityUtils;
 import org.newsclub.net.unix.AFUNIXSocket;
 import org.newsclub.net.unix.AFUNIXSocketAddress;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.stream.Collectors;
 
 public class ImageioClient {
 
@@ -42,7 +38,7 @@ public class ImageioClient {
         try {
             // Get content
             BufferedReader reader = new BufferedReader(new InputStreamReader(entity.getContent()));
-            String ticket = reader.readLine();
+            String ticket = reader.lines().collect(Collectors.joining());
             consumeEntity(entity);
             return ticket;
         } catch (IOException e) {

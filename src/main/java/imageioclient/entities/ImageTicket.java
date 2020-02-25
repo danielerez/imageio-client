@@ -23,7 +23,16 @@ public class ImageTicket implements BusinessEntity<Guid> {
     private String filename;
 
     public ImageTicket() {
-        this.imageTicketInformation = new ImageTicketInformation();
+        imageTicketInformation = new ImageTicketInformation();
+    }
+
+    public ImageTicket(Guid uuid, Long size, String url, int timeout, String[] ops) {
+        imageTicketInformation = new ImageTicketInformation();
+        imageTicketInformation.setSize(size);
+        imageTicketInformation.setUrl(url);
+        imageTicketInformation.setTimeout(timeout);
+        setId(uuid);
+        setOps(ops);
     }
 
     public ImageTicket(ImageTicketInformation imageTicketInformation) {
