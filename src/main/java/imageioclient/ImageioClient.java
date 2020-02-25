@@ -22,11 +22,15 @@ import java.util.stream.Collectors;
 
 public class ImageioClient {
 
-    public static String UNIX_SOCKET_PATH = "/run/vdsm/ovirt-imageio-daemon.sock";
     public static String TICKETS_URI = "/tickets/";
     public static int CLIENT_BUFFER_SIZE = 8 * 1024;
 
+    String socketPath;
     DefaultBHttpClientConnection conn;
+
+    public ImageioClient(String socketPath) {
+        this.socketPath = socketPath;
+    }
 
     public String getTicket(Guid ticketUUID) {
         // Create request
@@ -74,7 +78,7 @@ public class ImageioClient {
             return conn;
         }
 
-        File socketFile = new File(UNIX_SOCKET_PATH);
+        File socketFile = new File(socketPath);
         AFUNIXSocket socket;
         try {
             // Create unix socket

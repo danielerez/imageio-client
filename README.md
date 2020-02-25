@@ -1,23 +1,37 @@
 # imageio-client
 
-## Deploy and Run
+## Build
+
     $ mvn clean package
-    $ java -jar target/imageio-client-1.0-SNAPSHOT-jar-with-dependencies.jar ...
 
 ## Usage
-    $ imageio_client PUT <ticket_json>
-    $ imageio_client GET <ticket_uuid>
-    $ imageio_client DELETE <ticket_uuid>
-    
+
+    $ imageio_client sock PUT <ticket_json>
+    $ imageio_client sock GET <ticket_uuid>
+    $ imageio_client sock DELETE <ticket_uuid>
+
 ## Examples
-    $ alias imageio_client="java -jar target/imageio-client-1.0-SNAPSHOT-jar-with-dependencies.jar"
-    $ imageio_client PUT 
-        "{
-            'uuid': '799030aa-97c3-4354-871e-0adf0556fcbf',
-            'size': 1073741824,
-            'url': 'file://dev/vgname/lvname',
-            'timeout': 3000,
-            'ops': ["read", "write"]
-        }"
-    $ imageio_client GET 799030aa-97c3-4354-871e-0adf0556fcbf
-    $ imageio_client DELETE 799030aa-97c3-4354-871e-0adf0556fcbf
+
+Adding a ticket:
+
+    $ java -jar target/imageio-client-1.0-SNAPSHOT-jar-with-dependencies.jar \
+        /path/to/sock \
+        PUT '{
+            "uuid": "799030aa-97c3-4354-871e-0adf0556fcbf",
+            "size": 1073741824,
+            "url": "file:///path/to/image",
+            "timeout": 3000,
+            "ops": ["read", "write"]
+        }'
+
+Get ticket info:
+
+    $ java -jar target/imageio-client-1.0-SNAPSHOT-jar-with-dependencies.jar \
+        /path/to/sock \
+        GET 799030aa-97c3-4354-871e-0adf0556fcbf
+
+Delete a ticket:
+
+    $ java -jar target/imageio-client-1.0-SNAPSHOT-jar-with-dependencies.jar \
+        /path/to/sock \
+        DELETE 799030aa-97c3-4354-871e-0adf0556fcbf
