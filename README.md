@@ -5,12 +5,13 @@
     $ java -jar target/imageio-client-1.0-SNAPSHOT-jar-with-dependencies.jar ...
 
 ## Usage
-    $ client PUT <ticket_json>
-    $ client GET <ticket_uuid>
-    $ client DELETE <ticket_uuid>
+    $ imageio_client PUT <ticket_json>
+    $ imageio_client GET <ticket_uuid>
+    $ imageio_client DELETE <ticket_uuid>
     
 ## Examples
-    $ client PUT 
+    $ alias imageio_client="java -jar target/imageio-client-1.0-SNAPSHOT-jar-with-dependencies.jar"
+    $ imageio_client PUT 
         "{
             'uuid': '799030aa-97c3-4354-871e-0adf0556fcbf',
             'size': 1073741824,
@@ -18,5 +19,5 @@
             'timeout': 3000,
             'ops': ["read", "write"]
         }"
-    $ client GET 799030aa-97c3-4354-871e-0adf0556fcbf
-    $ client DELETE 799030aa-97c3-4354-871e-0adf0556fcbf
+    $ imageio_client GET 799030aa-97c3-4354-871e-0adf0556fcbf
+    $ imageio_client DELETE 799030aa-97c3-4354-871e-0adf0556fcbf
