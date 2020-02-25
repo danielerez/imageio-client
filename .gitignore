@@ -1,0 +1,25 @@
+# mvn folders
+###########################
+target
+
+# build-time files
+###########################
+.metadata
+*.class
+*.swp
+*.iws
+tmp.*
+
+# IDE files
+###########################
+.settings
+.project
+.classpath
+.factorypath
+.externalToolBuilders
+.checkstyle
+maven-eclipse.xml
+.pmd
+*.ipr
+*.iml
+.idea
