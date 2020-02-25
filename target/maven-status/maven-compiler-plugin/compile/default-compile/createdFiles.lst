@@ -1,0 +1,9 @@
+imageioclient/Client.class
+imageioclient/ImageioClient.class
+org/ovirt/engine/core/common/businessentities/Identifiable.class
+imageioclient/entities/ImageTicket.class
+imageioclient/entities/TransferType.class
+imageioclient/entities/ImageTicketInformation.class
+imageioclient/entities/BusinessEntity.class
+imageioclient/entities/Managed.class
+imageioclient/entities/Guid.class
