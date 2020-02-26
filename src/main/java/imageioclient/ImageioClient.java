@@ -22,24 +22,28 @@ import java.util.stream.Collectors;
 
 public class ImageioClient {
 
-    public static String UNIX_SOCKET_PATH = "/run/vdsm/ovirt-imageio-daemon.sock";
     public static String TICKETS_URI = "/tickets/";
     public static int CLIENT_BUFFER_SIZE = 8 * 1024;
 
+    String socketPath;
     DefaultBHttpClientConnection conn;
+
+    public ImageioClient(String socketPath) {
+        this.socketPath = socketPath;
+    }
 
     public String getTicket(Guid ticketUUID) {
         // Create request
         BasicHttpEntityEnclosingRequest request = getRequest("GET", TICKETS_URI + ticketUUID);
 
         // Send request and get response
-        HttpEntity entity = sendRequest(request);
+        HttpEntity response = sendRequest(request);
 
         try {
             // Get content
-            BufferedReader reader = new BufferedReader(new InputStreamReader(entity.getContent()));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(response.getContent()));
             String ticket = reader.lines().collect(Collectors.joining());
-            consumeEntity(entity);
+            consumeEntity(response);
             return ticket;
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage(), e);
@@ -56,8 +60,8 @@ public class ImageioClient {
         request.setHeader("content-length", String.valueOf(request.getEntity().getContentLength()));
 
         // Send request and get response
-        HttpEntity requestEntity = sendRequest(request);
-        consumeEntity(requestEntity);
+        HttpEntity response = sendRequest(request);
+        consumeEntity(response);
     }
 
     public void deleteTicket(String ticketUUID) {
@@ -65,8 +69,8 @@ public class ImageioClient {
         BasicHttpEntityEnclosingRequest request = getRequest("DELETE", TICKETS_URI + ticketUUID);
 
         // Send request and get response
-        HttpEntity entity = sendRequest(request);
-        consumeEntity(entity);
+        HttpEntity response = sendRequest(request);
+        consumeEntity(response);
     }
 
     private DefaultBHttpClientConnection getConnection() {
@@ -74,7 +78,7 @@ public class ImageioClient {
             return conn;
         }
 
-        File socketFile = new File(UNIX_SOCKET_PATH);
+        File socketFile = new File(socketPath);
         AFUNIXSocket socket;
         try {
             // Create unix socket
