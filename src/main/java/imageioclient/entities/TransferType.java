@@ -5,8 +5,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.ovirt.engine.core.common.businessentities.Identifiable;
-
 public enum TransferType implements Identifiable {
     Unknown(0, "unknown"),
     Download(1, "read"),

@@ -4,6 +4,10 @@
 
     $ mvn clean package
 
+## Test
+
+    $ mvn clean test
+
 ## Usage
 
     $ imageio_client sock PUT <ticket_json>

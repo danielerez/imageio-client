@@ -1,4 +1,4 @@
-package org.ovirt.engine.core.common.businessentities;
+package imageioclient.entities;
 
 /**
  * this interface will streamline all identified enum members where ordinal value will not be used (relying on ordinal

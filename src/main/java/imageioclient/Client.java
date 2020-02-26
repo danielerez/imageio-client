@@ -16,19 +16,17 @@ public class Client {
     }
 
     private static void execute(String[] args) {
-        String ticketId;
         ImageioClient imageioClient = new ImageioClient(args[0]);
+        ImageTicket ticket;
 
         switch (args[1]) {
             case "GET":
-                ticketId = args[2];
-                Guid ticketGuid = new Guid(ticketId);
-                String ticketStr = imageioClient.getTicket(ticketGuid);
-                System.out.println(ticketStr);
+                ticket = imageioClient.getTicket(new Guid(args[2]));
+                System.out.println(ticket.toJson().toString());
                 break;
             case "PUT":
                 JsonObject ticketJson = new Gson().fromJson(args[2], JsonObject.class);
-                ImageTicket ticket = new ImageTicket(
+                ticket = new ImageTicket(
                         Guid.createGuidFromString(ticketJson.get("uuid").getAsString()),
                         ticketJson.get("size").getAsLong(),
                         ticketJson.get("url").getAsString(),
@@ -38,8 +36,7 @@ public class Client {
                 imageioClient.putTicket(ticket);
                 break;
             case "DELETE":
-                ticketId = args[2];
-                imageioClient.deleteTicket(ticketId);
+                imageioClient.deleteTicket(new Guid(args[2]));
                 break;
             default:
                 usage();
