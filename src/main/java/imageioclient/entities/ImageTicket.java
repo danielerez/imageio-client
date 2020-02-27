@@ -110,6 +110,24 @@ public class ImageTicket implements BusinessEntity<Guid> {
         return new Gson().fromJson(json, JsonObject.class);
     }
 
+    public static ImageTicket fromJson(String json) {
+        JsonObject ticketJson = new Gson().fromJson(json, JsonObject.class);
+
+        ImageTicketInformation ticketInformation = new ImageTicketInformation();
+        ticketInformation.setId(Guid.createGuidFromString(ticketJson.get("uuid").getAsString()));
+        ticketInformation.setTimeout(ticketJson.get("timeout").getAsInt());
+        ticketInformation.setSize(ticketJson.get("size").getAsLong());
+        ticketInformation.setUrl(ticketJson.get("url").getAsString());
+        ticketInformation.setIdleTime(ticketJson.get("idle_time").getAsInt());
+
+        ImageTicket ticket = new ImageTicket(ticketInformation);
+        ticket.setSparse(ticketJson.get("sparse").getAsBoolean());
+        ticket.setOps(ticketJson.get("ops").getAsJsonArray().toString()
+                .replace("},{", " ,").split(" "));
+
+        return ticket;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

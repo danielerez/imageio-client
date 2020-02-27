@@ -3,12 +3,14 @@ package imageioclient;
 import imageioclient.entities.Guid;
 import imageioclient.entities.ImageTicket;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.DefaultBHttpClientConnection;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
+import org.apache.http.message.BasicHttpRequest;
 import org.apache.http.util.EntityUtils;
 import org.newsclub.net.unix.AFUNIXSocket;
 import org.newsclub.net.unix.AFUNIXSocketAddress;
@@ -32,19 +34,22 @@ public class ImageioClient {
         this.socketPath = socketPath;
     }
 
-    public String getTicket(Guid ticketUUID) {
+    public ImageTicket getTicket(Guid ticketUUID) {
         // Create request
-        BasicHttpEntityEnclosingRequest request = getRequest("GET", TICKETS_URI + ticketUUID);
+        BasicHttpRequest request = getRequest("GET", TICKETS_URI + ticketUUID);
 
         // Send request and get response
         HttpEntity response = sendRequest(request);
+        String responseContent = null;
 
         try {
             // Get content
             BufferedReader reader = new BufferedReader(new InputStreamReader(response.getContent()));
-            String ticket = reader.lines().collect(Collectors.joining());
+            responseContent = reader.lines().collect(Collectors.joining());
             consumeEntity(response);
-            return ticket;
+            return ImageTicket.fromJson(responseContent);
+        } catch (com.google.gson.JsonSyntaxException e) {
+            throw new RuntimeException(responseContent, e);
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
@@ -52,7 +57,8 @@ public class ImageioClient {
 
     public void putTicket(ImageTicket ticket) {
         // Create request
-        BasicHttpEntityEnclosingRequest request = getRequest("PUT", TICKETS_URI + ticket.getId());
+        BasicHttpEntityEnclosingRequest request =
+                (BasicHttpEntityEnclosingRequest) getRequest("PUT", TICKETS_URI + ticket.getId());
 
         // Create byte array from ticket
         StringEntity entity = new StringEntity(ticket.toJson().toString(), StandardCharsets.UTF_8);
@@ -64,9 +70,9 @@ public class ImageioClient {
         consumeEntity(response);
     }
 
-    public void deleteTicket(String ticketUUID) {
+    public void deleteTicket(Guid ticketUUID) {
         // Create request
-        BasicHttpEntityEnclosingRequest request = getRequest("DELETE", TICKETS_URI + ticketUUID);
+        BasicHttpRequest request = getRequest("DELETE", TICKETS_URI + ticketUUID);
 
         // Send request and get response
         HttpEntity response = sendRequest(request);
@@ -94,13 +100,15 @@ public class ImageioClient {
         return conn;
     }
 
-    private HttpEntity sendRequest(BasicHttpEntityEnclosingRequest request) {
+    private HttpEntity sendRequest(BasicHttpRequest request) {
         try {
             DefaultBHttpClientConnection conn = getConnection();
 
             // Send request
             conn.sendRequestHeader(request);
-            conn.sendRequestEntity(request);
+            if (request instanceof HttpEntityEnclosingRequest) {
+                conn.sendRequestEntity((HttpEntityEnclosingRequest) request);
+            }
             conn.flush();
 
             // Get response
@@ -119,8 +127,10 @@ public class ImageioClient {
         }
     }
 
-    private BasicHttpEntityEnclosingRequest getRequest(String method, String uri) {
-        return new BasicHttpEntityEnclosingRequest(method, uri, HttpVersion.HTTP_1_1);
+    private BasicHttpRequest getRequest(String method, String uri) {
+        return method.equals("PUT") ?
+                new BasicHttpEntityEnclosingRequest(method, uri, HttpVersion.HTTP_1_1) :
+                new BasicHttpRequest(method, uri, HttpVersion.HTTP_1_1);
     }
 
     private void consumeEntity(HttpEntity entity) {
