@@ -1,10 +1,14 @@
 package imageioclient.entities;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -114,18 +118,38 @@ public class ImageTicket implements BusinessEntity<Guid> {
         JsonObject ticketJson = new Gson().fromJson(json, JsonObject.class);
 
         ImageTicketInformation ticketInformation = new ImageTicketInformation();
-        ticketInformation.setId(Guid.createGuidFromString(ticketJson.get("uuid").getAsString()));
-        ticketInformation.setTimeout(ticketJson.get("timeout").getAsInt());
-        ticketInformation.setSize(ticketJson.get("size").getAsLong());
-        ticketInformation.setUrl(ticketJson.get("url").getAsString());
-        ticketInformation.setIdleTime(ticketJson.get("idle_time").getAsInt());
+        if (ticketJson.has("uuid")) {
+            ticketInformation.setId(Guid.createGuidFromString(ticketJson.get("uuid").getAsString()));
+        }
+        if (ticketJson.has("timeout")) {
+            ticketInformation.setTimeout(ticketJson.get("timeout").getAsInt());
+        }
+        if (ticketJson.has("size")) {
+            ticketInformation.setSize(ticketJson.get("size").getAsLong());
+        }
+        if (ticketJson.has("url")) {
+            ticketInformation.setUrl(ticketJson.get("url").getAsString());
+        }
+        if (ticketJson.has("idle_time")) {
+            ticketInformation.setIdleTime(ticketJson.get("idle_time").getAsInt());
+        }
 
         ImageTicket ticket = new ImageTicket(ticketInformation);
-        ticket.setSparse(ticketJson.get("sparse").getAsBoolean());
-        ticket.setOps(ticketJson.get("ops").getAsJsonArray().toString()
-                .replace("},{", " ,").split(" "));
+        if (ticketJson.has("sparse")) {
+            ticket.setSparse(ticketJson.get("sparse").getAsBoolean());
+        }
+        if (ticketJson.has("ops")) {
+            ticket.setOps(jsonToArray(ticketJson.get("ops").getAsJsonArray()));
+        }
 
         return ticket;
+    }
+
+    private static String[] jsonToArray(JsonArray jsonArray) {
+        Gson converter = new Gson();
+        Type type = new TypeToken<List<String>>(){}.getType();
+        List<String> list =  converter.fromJson(jsonArray, type);
+        return list.toArray(new String[0]);
     }
 
     @Override
