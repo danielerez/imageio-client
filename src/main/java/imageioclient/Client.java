@@ -25,15 +25,7 @@ public class Client {
                 System.out.println(ticket.toJson().toString());
                 break;
             case "PUT":
-                JsonObject ticketJson = new Gson().fromJson(args[2], JsonObject.class);
-                ticket = new ImageTicket(
-                        Guid.createGuidFromString(ticketJson.get("uuid").getAsString()),
-                        ticketJson.get("size").getAsLong(),
-                        ticketJson.get("url").getAsString(),
-                        ticketJson.get("timeout").getAsInt(),
-                        ticketJson.get("ops").getAsJsonArray().toString()
-                                .replace("},{", " ,").split(" "));
-                imageioClient.putTicket(ticket);
+                imageioClient.putTicket(ImageTicket.fromJson(args[2]));
                 break;
             case "DELETE":
                 imageioClient.deleteTicket(new Guid(args[2]));
